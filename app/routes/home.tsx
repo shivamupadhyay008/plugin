@@ -1,6 +1,6 @@
 import type { Route } from "./+types/home";
 import { PrayerAI } from "../components/PrayerAI";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { setAuthToken, setPluginSecretKey } from "~/services/axiosInstance";
 
 export function meta({}: Route.MetaArgs) {
@@ -11,6 +11,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
+  const [state, setState] = useState<any>(null);
   const handleMessage = (event) => {
     console.log("event.data", event.data);
     console.log("event.origin", event.origin);
@@ -23,6 +24,7 @@ export default function Home() {
       if (event.data.authToken) {
         console.log("Setting authToken:", event.data.authToken);
         setAuthToken(event.data.authToken);
+        setState(true)
       }
 
       // Signal back to parent that credentials were received
@@ -33,14 +35,14 @@ export default function Home() {
       console.log("No pluginSecretKey in event.data");
     }
   };
-  // console.log('some')
+  console.log('some')
   
   useEffect(() => {
     console.log("Adding message listener for parent app communication");
     // document.body.innerHTML += '<pre>' + 'testung ' + '</pre>';
 
     window.addEventListener("message", handleMessage);
-    window?.ReactNativeWebView?.postMessage("Hello from Web!");
+    // window?.ReactNativeWebView?.postMessage("Hello from Web!");
 
 
     // Signal to parent that child is ready to receive data
@@ -59,7 +61,7 @@ export default function Home() {
       <h3 className="text-4xl font-bold text-gray-800 text-center py-8 bg-gradient-to-r from-blue-500 to-blue-700 bg-clip-text text-transparent">
         Spiritual AI
       </h3>
-      <PrayerAI />
+      <PrayerAI state={state}/>
     </main>
   );
 }
