@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Parent App</title>
+</head>
+<body>
+    <h1>Test Parent App</h1>
+    <button id="sendData">Send Credentials to Child</button>
+    <button id="sendAck">Send Parent ACK</button>
+    <br><br>
+    <iframe id="childFrame"
+            src="http://localhost:5175"
+            width="800"
+            height="600"
+            style="border: 1px solid #ccc;">
+    </iframe>
+
+    <script>
+        const iframe = document.getElementById('childFrame');
+        const sendDataBtn = document.getElementById('sendData');
+        const sendAckBtn = document.getElementById('sendAck');
+
+        // Handle messages from child
+        window.addEventListener('message', (event) => {
+            if (event.origin !== 'http://localhost:5175') {
+                console.log('Message from untrusted origin:', event.origin);
+                return;
+            }
+
+            console.log('Received message from child:', event.data);
+
+            if (event.data.type === 'CHILD_READY') {
+                console.log('Child is ready, sending credentials...');
+                sendCredentials();
+            }
+        });
+
+        // Send credentials to child
+        function sendCredentials() {
+            const credentials = {
+                pluginSecretKey: 'test-plugin-key-12345',
+                authToken: 'test-jwt-token-abcdef123456'
+            };
+
+            console.log('Sending credentials to child:', credentials);
+            iframe.contentWindow.postMessage(credentials, 'http://localhost:5175');
+        }
+
+        // Send acknowledgment
+        function sendAck() {
+            const ackMessage = { type: 'PARENT_ACK' };
+            console.log('Sending ACK to child:', ackMessage);
+            iframe.contentWindow.postMessage(ackMessage, 'http://localhost:5175');
+        }
+
+        // Button event listeners
+        sendDataBtn.addEventListener('click', () => {
+            console.log('Manual send credentials button clicked');
+            sendCredentials();
+        });
+
+        sendAckBtn.addEventListener('click', () => {
+            console.log('Manual send ACK button clicked');
+            sendAck();
+        });
+
+        console.log('Parent test page ready. Child iframe will automatically send credentials when it signals ready.');
+    </script>
+</body>
+</html>
