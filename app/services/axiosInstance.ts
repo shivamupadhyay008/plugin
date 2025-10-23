@@ -12,7 +12,7 @@ export const setPluginSecretKey = (key) => {
   pluginSecretKey = key;
 };
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: 'https://william-muciferous-elenor.ngrok-free.app/api/plugin/ark-ai/',
+  baseURL: 'https://app-dev.thearkofrevival.com/api/plugin/ark-ai/',
   timeout: 50000, // 10 seconds timeout
   headers: {
     'Content-Type': 'application/json',
